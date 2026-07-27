@@ -1,0 +1,24 @@
+spring:
+  # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/zhimaAicodeMother
+    username: root
+    password: root
+  application:
+    name: fanren-ai-code-mother-backend
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+# springdoc-openapi配置
+springdoc:
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.example.zhimaaicodemother.controller
+# knife4j
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
