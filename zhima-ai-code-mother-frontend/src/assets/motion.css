@@ -1,0 +1,369 @@
+:root {
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+/* Short route transitions never overlap two live generation pages. */
+.page-enter-active {
+  transition:
+    opacity 420ms var(--ease-soft),
+    transform 520ms var(--ease-soft),
+    filter 420ms var(--ease-soft);
+}
+.page-leave-active {
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  filter: blur(3px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translate3d(0, -6px, 0);
+}
+.welcome-copy,
+.home-inner,
+.new-inner {
+  animation: compose-in 850ms var(--ease-soft) both;
+}
+@keyframes compose-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.dark-button,
+.send-button,
+.nav-link,
+.tool-chip,
+.category-tabs button {
+  transition:
+    transform 400ms var(--ease-spring),
+    background-color 250ms ease,
+    border-color 250ms ease,
+    color 250ms ease,
+    box-shadow 400ms var(--ease-soft);
+}
+.dark-button {
+  position: relative;
+  overflow: hidden;
+}
+.dark-button::before {
+  content: '';
+  position: absolute;
+  inset: -100% auto -100% -75%;
+  width: 40%;
+  transform: rotate(25deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  transition: left 700ms var(--ease-soft);
+  pointer-events: none;
+}
+.dark-button:hover::before {
+  left: 145%;
+}
+.dark-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(26, 44, 63, 0.16);
+}
+.dark-button .anticon,
+.send-button .anticon {
+  transition: transform 400ms var(--ease-spring);
+}
+.dark-button:hover .anticon,
+.send-button:hover:not(:disabled) .anticon {
+  transform: translateX(3px);
+}
+.dark-button:active,
+.send-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.96);
+}
+.nav-link:hover {
+  transform: translateX(3px);
+}
+.nav-link .anticon {
+  transition: transform 400ms var(--ease-spring);
+}
+.nav-link.active .anticon {
+  transform: scale(1.12);
+}
+
+.shortcut,
+.template-card {
+  position: relative;
+  isolation: isolate;
+  transform-style: preserve-3d;
+  translate: 0 0;
+  transition:
+    translate 450ms var(--ease-spring),
+    box-shadow 450ms var(--ease-soft),
+    border-color 300ms ease,
+    background-color 300ms ease;
+}
+.shortcut::after,
+.template-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    280px circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    rgba(255, 255, 255, 0.55),
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 450ms ease;
+  z-index: 2;
+}
+.shortcut.is-pointer-active::after,
+.template-card.is-pointer-active::after {
+  opacity: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .shortcut,
+  .template-card {
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  }
+  .shortcut:hover,
+  .template-card:hover {
+    box-shadow: 0 22px 42px rgba(62, 88, 125, 0.13);
+  }
+  .shortcut.is-pointer-active,
+  .template-card.is-pointer-active {
+    translate: 0 -5px;
+  }
+  .shortcut:active,
+  .template-card:active {
+    translate: 0 -1px;
+    scale: 0.975;
+  }
+}
+.shortcut-icon {
+  transition:
+    transform 550ms var(--ease-spring),
+    box-shadow 400ms ease;
+}
+.shortcut:hover .shortcut-icon {
+  transform: translateY(-3px) rotate(-7deg);
+  box-shadow: 0 7px 16px rgba(97, 123, 193, 0.16);
+}
+.template-info .anticon {
+  transition: transform 450ms var(--ease-spring);
+}
+.template-card:hover .template-info .anticon {
+  transform: translateX(4px);
+}
+.template-art i {
+  transition:
+    transform 700ms var(--ease-spring),
+    box-shadow 500ms ease;
+}
+.template-card:hover .tile.one {
+  transform: translate(-5px, -9px) rotate(-6deg);
+}
+.template-card:hover .tile.two {
+  transform: translate(7px, 3px) rotate(5deg);
+}
+.template-card:hover .orb.one {
+  transform: translate(-7px, -7px) scale(1.04);
+}
+.template-card:hover .orb.two {
+  transform: translate(7px, 4px) scale(0.95);
+}
+.template-card:hover .bar {
+  transform: scaleY(1.1);
+  transform-origin: bottom;
+}
+.template-card:hover .bar.two {
+  transition-delay: 40ms;
+}
+.template-card:hover .bar.three {
+  transition-delay: 80ms;
+}
+.template-grid {
+  position: relative;
+}
+.template-move,
+.template-enter-active,
+.template-leave-active {
+  transition:
+    transform 500ms var(--ease-soft),
+    opacity 280ms ease;
+}
+.template-enter-from,
+.template-leave-to {
+  opacity: 0;
+  transform: translateY(12px) scale(0.97);
+}
+.template-leave-active {
+  position: absolute;
+  pointer-events: none;
+}
+.category-tabs button:hover {
+  transform: translateY(-2px);
+}
+.category-tabs button:active {
+  transform: scale(0.94);
+}
+.template-search {
+  transition:
+    box-shadow 400ms ease,
+    border-color 300ms ease;
+}
+.template-search:focus-within {
+  box-shadow: 0 8px 24px rgba(83, 114, 160, 0.09);
+}
+
+.composer {
+  transition:
+    box-shadow 500ms var(--ease-soft),
+    border-color 350ms ease,
+    background-color 350ms ease;
+}
+.composer:focus-within {
+  box-shadow:
+    0 18px 45px rgba(72, 101, 152, 0.12),
+    0 0 0 4px rgba(134, 167, 225, 0.07);
+}
+.composer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    340px circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    rgba(220, 235, 255, 0.32),
+    transparent 75%
+  );
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+.composer.is-pointer-active::before,
+.composer:focus-within::before {
+  opacity: 1;
+}
+.composer textarea,
+.composer .tool-chip {
+  position: relative;
+}
+.composer.is-creating {
+  animation: thinking-glow 2.4s ease-in-out infinite;
+}
+@keyframes thinking-glow {
+  50% {
+    border-color: #aec5ec;
+    box-shadow:
+      0 18px 48px rgba(80, 118, 175, 0.13),
+      0 0 0 5px rgba(134, 167, 225, 0.07);
+  }
+}
+.send-button:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 7px 18px rgba(71, 106, 159, 0.13);
+}
+.feedback-enter-active,
+.feedback-leave-active {
+  transition:
+    opacity 250ms ease,
+    transform 350ms var(--ease-soft);
+}
+.feedback-enter-from,
+.feedback-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+
+@media (hover: none) {
+  .shortcut:active,
+  .template-card:active {
+    transform: scale(0.98);
+  }
+}
+.press-wave {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--press-x, 50%) var(--press-y, 50%),
+    rgba(123, 160, 233, 0.3),
+    rgba(155, 184, 234, 0.1) 45%,
+    transparent 75%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+.nav-link,
+.category-tabs button,
+.guide-list button {
+  position: relative;
+}
+.scroll-reveal {
+  transition:
+    opacity 650ms var(--ease-soft),
+    translate 800ms var(--ease-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.scroll-reveal.reveal-pending {
+  opacity: 0;
+  translate: 0 26px;
+}
+.guide-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 450ms var(--ease-soft),
+    opacity 300ms ease;
+}
+.guide-answer.expanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.guide-answer > div {
+  overflow: hidden;
+  min-height: 0;
+}
+.guide-list h2 span {
+  transition: rotate 400ms var(--ease-spring);
+}
+.guide-list button[aria-expanded='true'] span {
+  rotate: 180deg;
+}
+.guide-list button:hover {
+  color: #436bea;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-from,
+  .page-leave-to,
+  .template-enter-from,
+  .template-leave-to,
+  .feedback-enter-from,
+  .feedback-leave-to {
+    transform: none;
+    filter: none;
+  }
+  .shortcut,
+  .template-card,
+  .dark-button,
+  .nav-link,
+  .send-button {
+    transform: none !important;
+  }
+  .scroll-reveal.reveal-pending {
+    opacity: 1;
+    translate: none;
+  }
+  .shortcut,
+  .template-card {
+    translate: none !important;
+    scale: 1 !important;
+  }
+}

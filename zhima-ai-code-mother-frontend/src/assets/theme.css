@@ -1,0 +1,191 @@
+:root {
+  --paper: #f8f7f5;
+  --ink: #192938;
+  --muted: #75808d;
+  --blue: #426be8;
+  --mist: #dbe9f2;
+  --peach: #f7e7d7;
+  --line: rgba(34, 52, 73, 0.08);
+  --display: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'SimSun', serif;
+  --shadow: 0 16px 40px rgba(48, 66, 92, 0.07);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+button,
+input,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+}
+::selection {
+  background: #dce6ff;
+}
+.display-title {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.4;
+  color: #152330;
+}
+.page-wrap {
+  width: min(1120px, 100%);
+  margin: auto;
+  padding: 56px 52px 72px;
+}
+.page-kicker {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 28px;
+}
+.page-title {
+  font-family: var(--display);
+  font-size: 38px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+.page-subtitle {
+  color: var(--muted);
+  line-height: 1.9;
+  font-size: 14px;
+}
+.dark-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 13px 28px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: white;
+  font-size: 14px;
+}
+.dark-button:hover {
+  background: #2b4055;
+  color: white;
+}
+.ant-btn-primary {
+  box-shadow: none;
+}
+.ant-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+.ant-table {
+  background: transparent !important;
+}
+.ant-table-wrapper .ant-table-thead > tr > th {
+  background: #f2f5f8;
+  color: #657487;
+  font-weight: 500;
+}
+#myAppsPage,
+#userProfilePage,
+#appManagePage,
+#userManagePage,
+#chatManagePage,
+#appEditPage {
+  padding: 32px;
+}
+#myAppsPage .page-title,
+#userProfilePage .page-title {
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 500;
+}
+#appChatPage {
+  background: transparent !important;
+  height: 100dvh !important;
+}
+#appChatPage .chat-section,
+#appChatPage .preview-section {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+#appChatPage .user-message .message-content {
+  background: #edf2ff;
+  color: #324b77;
+}
+#appChatPage .ai-message .message-content {
+  background: #f6f8fa;
+}
+#appChatPage .header-bar {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+#appChatPage .header-right,
+#appChatPage .preview-header {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (max-width: 900px) {
+  .page-wrap {
+    padding: 36px 24px 60px;
+  }
+}
+@media (max-width: 640px) {
+  .page-wrap {
+    padding: 28px 20px 48px;
+  }
+  .page-title {
+    font-size: 30px;
+  }
+  #myAppsPage,
+  #userProfilePage,
+  #appManagePage,
+  #userManagePage,
+  #chatManagePage,
+  #appEditPage {
+    padding: 12px;
+  }
+  #appChatPage {
+    min-height: 950px;
+    height: auto !important;
+    padding: 8px;
+  }
+  #appChatPage .main-content {
+    flex-direction: column;
+    overflow: visible;
+  }
+  #appChatPage .chat-section {
+    min-height: 480px;
+  }
+  #appChatPage .messages-container {
+    max-height: 380px;
+  }
+  #appChatPage .preview-section {
+    min-height: 420px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
