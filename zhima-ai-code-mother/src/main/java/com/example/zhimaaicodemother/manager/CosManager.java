@@ -1,0 +1,59 @@
+package com.example.zhimaaicodemother.manager;
+
+import com.example.zhimaaicodemother.config.CosClientConfig;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.model.PutObjectRequest;
+import com.qcloud.cos.model.PutObjectResult;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+
+/**
+ * COS对象存储管理器
+ * @author fanren
+ */
+@Component
+@Slf4j
+public class CosManager {
+
+    @Resource
+    private CosClientConfig cosClientConfig;
+
+    @Resource
+    private COSClient cosClient;
+
+    /**
+     * 上传对象
+     *
+     * @param key 唯一键
+     * @param file 文件
+     * @return 上传结果
+     */
+    public PutObjectResult putObject(String key, File file){
+        PutObjectRequest putObjectRequest = new PutObjectRequest(cosClientConfig.getBucket(), key,file);
+        return cosClient.putObject(putObjectRequest);
+    }
+    /**
+     * 上传文件到cos并返回URL
+     *
+     * @param key cos对象键
+     * @param file 要上传的文件
+     * @return 文件的访问url，失败返回null
+     */
+    public String uploadFile(String key, File file){
+        //上传文件
+        PutObjectResult result = putObject(key,file);
+            if(result!=null){
+                //构建url
+                String url = String.format("%s%s",cosClientConfig.getHost(),key);
+                log.info("文件上传Cos成功：{}->{}",file.getName(),url);
+                return url;
+            }else{
+                log.error("文件上传Cos失败，返回结果为空");
+                return null;
+            }
+        }
+}
+
