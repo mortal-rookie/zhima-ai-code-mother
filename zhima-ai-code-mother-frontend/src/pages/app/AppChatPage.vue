@@ -27,7 +27,7 @@
           </template>
           下载代码
         </a-button>
-        <a-button type="primary" @click="deployApp" :loading="deploying">
+        <a-button type="primary" @click="deployApp" :loading="deploying" :disabled="!isOwner">
           <template #icon>
             <CloudUploadOutlined />
           </template>
@@ -292,7 +292,7 @@ const visualEditor = new VisualEditor({
 
 // 权限相关
 const isOwner = computed(() => {
-  return appInfo.value?.userId === loginUserStore.loginUser.id
+  return !!loginUserStore.loginUser.id && String(appInfo.value?.userId) === String(loginUserStore.loginUser.id)
 })
 
 const isAdmin = computed(() => {
@@ -378,9 +378,9 @@ const fetchAppInfo = async () => {
       appInfo.value = res.data.data
 
       // 先加载对话历史
-      await loadChatHistory()
+      if (isOwner.value || isAdmin.value) await loadChatHistory()
       // 如果有至少2条对话记录，展示对应的网站
-      if (messages.value.length >= 2) {
+      if (messages.value.length >= 2 || appInfo.value.deployKey) {
         updatePreview()
       }
       // 检查是否需要自动发送初始提示词
@@ -489,6 +489,7 @@ const sendMessage = async () => {
  * 这里把增量先攒在普通变量里，最多每 80ms 才刷一次界面。
  */
 const STREAM_FLUSH_INTERVAL = 80
+let activeEventSource: EventSource | null = null
 let streamFlushTimer: ReturnType<typeof setTimeout> | null = null
 
 // 取消还没到点的刷新。流结束/出错时必须调用，
@@ -521,6 +522,7 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
     eventSource = new EventSource(url, {
       withCredentials: true,
     })
+    activeEventSource = eventSource
 
     let fullContent = ''
 
@@ -862,21 +864,21 @@ const getInputPlaceholder = () => {
   return '请描述你想生成的网站，越详细效果越好哦'
 }
 
+const onIframeMessage = (event: MessageEvent) => visualEditor.handleIframeMessage(event)
 // 页面加载时获取应用信息
 onMounted(() => {
   fetchAppInfo()
 
   // 监听 iframe 消息
-  window.addEventListener('message', (event) => {
-    visualEditor.handleIframeMessage(event)
-  })
+  window.addEventListener('message', onIframeMessage)
 })
 
 // 清理资源
 onUnmounted(() => {
-  // EventSource 会在组件卸载时自动清理，但 SSE 回调里排的定时器不会，
-  // 必须手动清掉：否则它会在你已经离开对话页之后触发，
-  // 那时 route.params.id 已经没了，前端就会弹「应用ID不存在」并把页面强推回主页
+  activeEventSource?.close()
+  activeEventSource = null
+  isGenerating.value = false
+  window.removeEventListener('message', onIframeMessage)
   pendingRefreshTimers.forEach((timer) => clearTimeout(timer))
   pendingRefreshTimers.clear()
   // 流式节流刷新的定时器同理

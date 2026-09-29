@@ -13,9 +13,12 @@ export const useLoginUserStore = defineStore('loginUser', () => {
 
   // 获取登录用户信息
   async function fetchLoginUser() {
-    const res = await getLoginUser()
-    if (res.data.code === 0 && res.data.data) {
-      loginUser.value = res.data.data
+    try {
+      const res = await getLoginUser()
+      if (res.data.code === 0 && res.data.data) loginUser.value = res.data.data
+      else loginUser.value = { userName: '未登录' }
+    } catch {
+      loginUser.value = { userName: '未登录' }
     }
   }
 

@@ -1,9 +1,15 @@
 <template>
   <div id="userRegisterPage">
-    <h2 class="title">AI 应用生成 - 用户注册</h2>
+    <h2 class="title">开启你的创作空间</h2>
     <div class="desc">不写一行代码，生成完整应用</div>
     <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
-      <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号' }]">
+      <a-form-item
+        name="userAccount"
+        :rules="[
+          { required: true, message: '请输入账号' },
+          { min: 4, message: '账号至少 4 位' },
+        ]"
+      >
         <a-input v-model:value="formState.userAccount" placeholder="请输入账号" />
       </a-form-item>
       <a-form-item
@@ -27,9 +33,15 @@
       </a-form-item>
       <div class="tips">
         已有账号？
-        <RouterLink to="/user/login">去登录</RouterLink>
+        <RouterLink :to="{ path: '/user/login', query: { redirect: route.query.redirect } }"
+          >去登录</RouterLink
+        >
       </div>
-      <a-form-item name="agreement" :rules="[{ validator: validateAgreement }]" class="agreement-item">
+      <a-form-item
+        name="agreement"
+        :rules="[{ validator: validateAgreement }]"
+        class="agreement-item"
+      >
         <a-checkbox v-model:checked="formState.agreement">
           我已阅读并同意
           <RouterLink to="/user/agreement" target="_blank">《用户协议》</RouterLink>
@@ -38,19 +50,23 @@
         </a-checkbox>
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%">注册</a-button>
+        <a-button type="primary" html-type="submit" :loading="submitting" style="width: 100%"
+          >注册</a-button
+        >
       </a-form-item>
     </a-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { userRegister } from '@/api/userController.ts'
 import { message } from 'ant-design-vue'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
 const router = useRouter()
+const route = useRoute()
+const submitting = ref(false)
 
 const formState = reactive<API.UserRegisterRequest & { agreement: boolean }>({
   userAccount: '',
@@ -90,100 +106,94 @@ const validateAgreement = (rule: unknown, value: boolean, callback: (error?: Err
  * @param values
  */
 const handleSubmit = async (values: API.UserRegisterRequest & { agreement: boolean }) => {
-  // agreement 只是前端勾选状态，不发给后端
-  const res = await userRegister({
-    userAccount: values.userAccount,
-    userPassword: values.userPassword,
-    checkPassword: values.checkPassword,
-  })
-  // 注册成功，跳转到登录页面
-  if (res.data.code === 0) {
-    message.success('注册成功')
-    router.push({
-      path: '/user/login',
-      replace: true,
+  if (submitting.value) return
+  submitting.value = true
+  try {
+    // agreement 只是前端勾选状态，不发给后端
+    const res = await userRegister({
+      userAccount: values.userAccount,
+      userPassword: values.userPassword,
+      checkPassword: values.checkPassword,
     })
-  } else {
-    message.error('注册失败，' + res.data.message)
+    // 注册成功，跳转到登录页面
+    if (res.data.code === 0) {
+      message.success('注册成功')
+      await router.replace({
+        path: '/user/login',
+        query: { redirect: route.query.redirect },
+      })
+    } else {
+      message.error('注册失败，' + res.data.message)
+    }
+  } catch (error) {
+    message.error(error instanceof Error ? error.message : '注册失败，请重试')
+  } finally {
+    submitting.value = false
   }
 }
 </script>
 
 <style scoped>
+#userLoginPage,
 #userRegisterPage {
-  background: rgba(14, 14, 16, 0.82);
-  max-width: 480px;
-  padding: 36px 32px 28px;
-  margin: 64px auto;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  max-width: 460px;
+  width: 100%;
+  padding: 42px 36px 30px;
+  margin: 0;
+  border-radius: 24px;
+  border: 1px solid white;
   backdrop-filter: blur(18px);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--shadow);
 }
-
 .title {
+  font-family: var(--display);
   text-align: center;
-  margin-bottom: 10px;
-  color: #fff;
-  font-weight: 700;
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 30px;
 }
-
 .desc {
   text-align: center;
-  color: #9a9aa0;
-  margin-bottom: 24px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  font-size: 13px;
 }
-
 .tips {
-  margin-bottom: 16px;
-  color: #7a7a80;
-  font-size: 13px;
   text-align: right;
-}
-
-.tips a {
-  color: #ffdb18;
-}
-
-/* 协议勾选框 */
-.agreement-item {
-  margin-bottom: 16px;
-}
-
-.agreement-item :deep(.ant-checkbox-wrapper) {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--muted);
   font-size: 13px;
-  line-height: 1.7;
-  align-items: flex-start;
+  margin-bottom: 20px;
 }
-
-.agreement-item :deep(.ant-checkbox) {
-  margin-top: 3px;
+.agreement-tip {
+  margin: 18px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.9;
 }
-
-.agreement-item :deep(.ant-checkbox-wrapper a) {
-  color: #ffdb18;
-}
-
-.agreement-item :deep(.ant-form-item-explain-error) {
+.agreement-item :deep(.ant-checkbox-wrapper) {
+  color: var(--muted);
   font-size: 12px;
+  line-height: 1.8;
 }
-
-:deep(.ant-input),
-:deep(.ant-input-password),
-:deep(.ant-input-affix-wrapper) {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  color: #f5f5f5 !important;
+:deep(.ant-input-affix-wrapper),
+:deep(.ant-input:not(.ant-input-affix-wrapper input)) {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.8);
 }
-
-:deep(.ant-input::placeholder) {
-  color: rgba(255, 255, 255, 0.35) !important;
-}
-
 :deep(.ant-btn-primary) {
-  height: 44px;
+  height: 46px;
   border-radius: 999px;
-  font-size: 16px;
+  background: var(--ink);
+  border-color: var(--ink);
+  font-size: 14px;
+}
+@media (max-width: 640px) {
+  #userLoginPage,
+  #userRegisterPage {
+    padding: 32px 24px;
+  }
 }
 </style>

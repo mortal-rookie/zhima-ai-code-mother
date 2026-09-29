@@ -45,16 +45,16 @@ const showOtherLink = computed(() => !!props.otherLink)
   max-width: 900px;
   margin: 32px auto 56px;
   padding: 40px 40px 32px;
-  background: rgba(14, 14, 16, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid var(--line);
   border-radius: 18px;
   backdrop-filter: blur(18px);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 24px 60px rgba(48, 66, 92, 0.07);
 }
 
 .doc-title {
   margin: 0 0 12px;
-  color: #fff;
+  color: var(--ink);
   font-size: 26px;
   font-weight: 700;
   text-align: center;
@@ -63,12 +63,12 @@ const showOtherLink = computed(() => !!props.otherLink)
 .doc-meta {
   margin: 0 0 28px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--muted);
   font-size: 13px;
 }
 
 .doc-body {
-  color: rgba(255, 255, 255, 0.72);
+  color: #5d6b7b;
   font-size: 14px;
   line-height: 1.9;
 }
@@ -77,7 +77,7 @@ const showOtherLink = computed(() => !!props.otherLink)
   position: relative;
   margin: 26px 0 10px;
   padding-left: 12px;
-  color: #fff;
+  color: var(--ink);
   font-size: 16px;
   font-weight: 700;
 }
@@ -90,7 +90,7 @@ const showOtherLink = computed(() => !!props.otherLink)
   width: 3px;
   height: 15px;
   border-radius: 2px;
-  background: linear-gradient(180deg, #ffdb18 0%, #e27000 100%);
+  background: linear-gradient(180deg, #426be8 0%, #8da9db 100%);
 }
 
 .doc-body :deep(p) {
@@ -107,29 +107,29 @@ const showOtherLink = computed(() => !!props.otherLink)
 }
 
 .doc-body :deep(strong) {
-  color: #fff4c5;
+  color: #405b7c;
   font-weight: 600;
 }
 
 .doc-body :deep(a) {
-  color: #ffdb18;
+  color: #426be8;
 }
 
 .doc-actions {
   margin-top: 32px;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--line);
   text-align: center;
   font-size: 14px;
 }
 
 .doc-actions a {
-  color: #ffdb18;
+  color: #426be8;
 }
 
 .doc-actions .sep {
   margin: 0 12px;
-  color: rgba(255, 255, 255, 0.22);
+  color: #9aa5b0;
 }
 
 @media (max-width: 768px) {

@@ -73,7 +73,7 @@
               <a-button type="link" size="small" @click="openDetail(record)">详情</a-button>
               <a-button type="link" size="small" @click="openRenameModal(record)">重命名</a-button>
               <a-popconfirm
-                title="删除后该应用及其对话记录将不可恢复，确定删除吗？"
+                title="确定删除这个应用吗？删除后将不再显示在应用列表中。"
                 ok-text="确定"
                 cancel-text="取消"
                 @confirm="doDelete(record.id)"
@@ -205,6 +205,7 @@ const pagination = computed(() => ({
   pageSize: searchParams.pageSize ?? 10,
   total: total.value,
   showSizeChanger: true,
+  pageSizeOptions: ['10', '20'],
   showTotal: (t: number) => `共 ${t} 条`,
 }))
 

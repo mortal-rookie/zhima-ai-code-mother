@@ -1,9 +1,15 @@
 <template>
   <div id="userLoginPage">
-    <h2 class="title">AI 应用生成 - 用户登录</h2>
+    <h2 class="title">欢迎回到峙码</h2>
     <div class="desc">不写一行代码，生成完整应用</div>
     <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
-      <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号' }]">
+      <a-form-item
+        name="userAccount"
+        :rules="[
+          { required: true, message: '请输入账号' },
+          { min: 4, message: '账号至少 4 位' },
+        ]"
+      >
         <a-input v-model:value="formState.userAccount" placeholder="请输入账号" />
       </a-form-item>
       <a-form-item
@@ -17,10 +23,14 @@
       </a-form-item>
       <div class="tips">
         没有账号
-        <RouterLink to="/user/register">去注册</RouterLink>
+        <RouterLink :to="{ path: '/user/register', query: { redirect: route.query.redirect } }"
+          >去注册</RouterLink
+        >
       </div>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%">登录</a-button>
+        <a-button type="primary" html-type="submit" :loading="submitting" style="width: 100%"
+          >登录</a-button
+        >
       </a-form-item>
       <p class="agreement-tip">
         登录即代表您已阅读并同意
@@ -32,10 +42,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { userLogin } from '@/api/userController.ts'
 import { useLoginUserStore } from '@/stores/loginUser.ts'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 
 const formState = reactive<API.UserLoginRequest>({
@@ -44,92 +54,101 @@ const formState = reactive<API.UserLoginRequest>({
 })
 
 const router = useRouter()
+const route = useRoute()
+const submitting = ref(false)
 const loginUserStore = useLoginUserStore()
 
 /**
  * 提交表单
  * @param values
  */
-const handleSubmit = async (values: any) => {
-  const res = await userLogin(values)
-  // 登录成功，把登录态保存到全局状态中
-  if (res.data.code === 0 && res.data.data) {
+const handleSubmit = async (values: API.UserLoginRequest) => {
+  if (submitting.value) return
+  submitting.value = true
+  try {
+    const res = await userLogin(values)
+    if (res.data.code !== 0 || !res.data.data) throw new Error(res.data.message || '登录失败')
     await loginUserStore.fetchLoginUser()
     message.success('登录成功')
-    router.push({
-      path: '/',
-      replace: true,
-    })
-  } else {
-    message.error('登录失败，' + res.data.message)
+    const target = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+    // Restrict redirects to this application, including legacy absolute same-origin redirects.
+    let destination = '/'
+    try {
+      const url = new URL(target, window.location.origin)
+      if (url.origin === window.location.origin) destination = url.pathname + url.search + url.hash
+    } catch {
+      /* use homepage */
+    }
+    await router.replace(destination)
+  } catch (error) {
+    message.error(error instanceof Error ? error.message : '登录失败，请重试')
+  } finally {
+    submitting.value = false
   }
 }
 </script>
 
 <style scoped>
-#userLoginPage {
-  background: rgba(14, 14, 16, 0.82);
-  max-width: 480px;
-  padding: 36px 32px 28px;
-  margin: 64px auto;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+#userLoginPage,
+#userRegisterPage {
+  background: rgba(255, 255, 255, 0.75);
+  max-width: 460px;
+  width: 100%;
+  padding: 42px 36px 30px;
+  margin: 0;
+  border-radius: 24px;
+  border: 1px solid white;
   backdrop-filter: blur(18px);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--shadow);
 }
-
 .title {
+  font-family: var(--display);
   text-align: center;
-  margin-bottom: 10px;
-  color: #fff;
-  font-weight: 700;
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 30px;
 }
-
 .desc {
   text-align: center;
-  color: #9a9aa0;
-  margin-bottom: 24px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  font-size: 13px;
 }
-
 .tips {
   text-align: right;
-  color: #7a7a80;
+  color: var(--muted);
   font-size: 13px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
-
-.tips a {
-  color: #ffdb18;
-}
-
-/* 登录即同意协议提示 */
 .agreement-tip {
-  margin: 14px 0 0;
+  margin: 18px 0 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.9;
+}
+.agreement-item :deep(.ant-checkbox-wrapper) {
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.8;
 }
-
-.agreement-tip a {
-  color: #ffdb18;
+:deep(.ant-input-affix-wrapper),
+:deep(.ant-input:not(.ant-input-affix-wrapper input)) {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.8);
 }
-
-:deep(.ant-input),
-:deep(.ant-input-password),
-:deep(.ant-input-affix-wrapper) {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  color: #f5f5f5 !important;
-}
-
-:deep(.ant-input::placeholder) {
-  color: rgba(255, 255, 255, 0.35) !important;
-}
-
 :deep(.ant-btn-primary) {
-  height: 44px;
+  height: 46px;
   border-radius: 999px;
-  font-size: 16px;
+  background: var(--ink);
+  border-color: var(--ink);
+  font-size: 14px;
+}
+@media (max-width: 640px) {
+  #userLoginPage,
+  #userRegisterPage {
+    padding: 32px 24px;
+  }
 }
 </style>
