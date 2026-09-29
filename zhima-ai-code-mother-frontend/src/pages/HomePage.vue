@@ -10,6 +10,7 @@ import {
   ArrowRightOutlined,
 } from '@ant-design/icons-vue'
 import AtmosphereArt from '@/components/AtmosphereArt.vue'
+import KleeCompanion from '@/components/KleeCompanion.vue'
 import PromptComposer from '@/components/PromptComposer.vue'
 import AppCard from '@/components/AppCard.vue'
 import AuthorInfoModal from '@/components/AuthorInfoModal.vue'
@@ -80,8 +81,13 @@ onMounted(loadApps)
     <section v-motion-surface class="home-hero">
       <AtmosphereArt />
       <div class="home-inner">
-        <div class="welcome-label">你的创作空间</div>
-        <h1 class="display-title">你好，<br />今天想创造什么？</h1>
+        <div class="home-intro">
+          <div>
+            <div class="welcome-label">你的创作空间</div>
+            <h1 class="display-title">你好，<br />今天想创造什么？</h1>
+          </div>
+          <KleeCompanion />
+        </div>
         <PromptComposer />
         <div class="shortcut-grid">
           <RouterLink
@@ -178,6 +184,13 @@ onMounted(loadApps)
   font-size: 12px;
   color: #7b8794;
   margin-bottom: 22px;
+}
+.home-intro {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 h1 {
   margin: 0 0 34px;
@@ -307,6 +320,9 @@ h1 {
   color: var(--blue);
 }
 @media (max-width: 1050px) {
+  h1 {
+    font-size: 40px;
+  }
   .home-inner {
     padding-top: 60px;
   }
@@ -315,6 +331,9 @@ h1 {
   }
 }
 @media (max-width: 640px) {
+  .home-intro {
+    display: block;
+  }
   .home-inner {
     padding: 44px 20px 30px;
   }
